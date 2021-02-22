@@ -1,0 +1,110 @@
+{
+  "batchSize": 2000,
+  "tasks": [        
+    {
+      "description": "To append Negative Trees layer",
+      "dataType": "LAYERS",
+      "source": "C:/dev/APHIS/MVP2/MVP2/NegativeTrees_Transformed.gdb/NegativeTrees",
+      "source_small": "C:/dev/APHIS/MVP2/MVP2/NegativeTrees.gdb/NegativeTrees",      
+      "target": {
+        "itemId": "aad429b976c548b189662356694c27ad",
+        "orderInItem": 0,
+        "truncateFirst": false, "check4Existing": false
+      },
+      "skip": true
+    },
+    {
+      "description": "To append Negative Trees table",
+      "dataType": "TABLES",
+      "source": "C:/dev/APHIS/MVP2/MVP2/NegativeTrees_Transformed.gdb/NegativeTrees_Surveys",
+      "source_small": "C:/dev/APHIS/MVP2/MVP2/NegativeTrees.gdb/NegativeTrees_Surveys",      
+      "target": {
+        "itemId": "aad429b976c548b189662356694c27ad",
+        "orderInItem": 0,
+        "truncateFirst": false, "check4Existing": true
+      },
+      "skip": true
+    },        
+    {
+      "description": "To append Trees layer",
+      "dataType": "LAYERS",
+      "source": "C:/dev/APHIS/MVP2/MVP2/Trees.gdb/Trees",
+      "target": {
+        "itemId": "82dd786d6f4c47cd906ef509cb6ff17c",
+        "orderInItem": 0,
+        "truncateFirst": false, "check4Existing": false
+      },
+      "skip": false
+    },
+    {
+      "description": "To append Trees table",
+      "dataType": "TABLES",
+      "source": "C:/dev/APHIS/MVP2/MVP2/Trees.gdb/Trees_Surveys",
+      "target": {
+        "itemId": "82dd786d6f4c47cd906ef509cb6ff17c",
+        "orderInItem": 0,
+        "truncateFirst": false, "check4Existing": false
+      },
+      "skip": false
+    },    
+    {
+      "description": "To append Callback layer",
+      "dataType": "LAYERS",
+      "source": "C:/dev/APHIS/MVP2/MVP2/Callbacks.gdb/Callback",
+      "target": {
+        "itemId": "80ee584413b342e3ad83b18547ab5ed1",
+        "orderInItem": 0,
+        "truncateFirst": false, "check4Existing": false
+      },
+      "skip": true
+    },
+    {
+      "description": "To append Callback Attempts table",
+      "dataType": "TABLES",
+      "source": "C:/dev/APHIS/MVP2/MVP2/Callbacks.gdb/CallbackAttempts",
+      "target": {
+        "itemId": "80ee584413b342e3ad83b18547ab5ed1",
+        "orderInItem": 0,
+        "truncateFirst": false, "check4Existing": false
+      },
+      "skip": true
+    },    
+    {
+      "description": "To append Hazard layer",
+      "dataType": "LAYERS",
+      "source": "C:/dev/APHIS/MVP2/MVP2/Hazard.gdb/Hazard",
+      "target": {
+        "itemId": "0bf286957b6940eda23cee7f668e3ae9",
+        "orderInItem": 0,
+        "truncateFirst": false, "check4Existing": false
+      },
+      "skip": true
+    },
+    {
+      "description": "To append Survey line layer",
+      "dataType": "LAYERS",
+      "source": "C:/dev/APHIS/MVP2/MVP2/SurveyLine.gdb/SurveyLine",
+      "target": {
+        "itemId": "9d2f76eec1474e3e8da0aacf337d4070",
+        "orderInItem": 0,
+        "truncateFirst": false, "check4Existing": false
+      },
+      "skip": true
+    },
+    {
+      "description": "To append parcel layer",
+      "dataType": "LAYERS",
+      "source": "C:/dev/APHIS/MVP2/MVP2/additional_parcels/combined.gdb/parcels_managed",
+      "target": {
+        "itemId": "9d2f76eec1474e3e8da0aacf337d4070",
+        "orderInItem": 0,
+        "truncateFirst": false, "check4Existing": false
+      },
+      "skip": true
+    }            
+
+
+    
+  ]
+
+}
