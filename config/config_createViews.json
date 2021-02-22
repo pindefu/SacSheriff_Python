@@ -1,0 +1,57 @@
+{
+  "the_portal": {
+    "path": "https://maps-dev.aphis.usda.gov/arcgis",
+    "client_id": "sZFZkmRtBiMeEtv8"
+  },
+  "target_folder": "MVP2_Views",
+  "views_to_create":[
+    {
+      "title": "Trees",
+      "itemId": "c2bde85aecdc4b4080f9fbbab1341b32",
+      "views_suffixes": ["_v"],
+      "skip": true      
+    },
+    {
+      "title": "NegativeTrees",
+      "itemId": "b19429b4289245038235f6589ccedbde",
+      "views_suffixes": ["_v"],
+      "skip": true      
+    },    
+    {
+      "title": "Callback",
+      "itemId": "ab7feb2777184874a4469f94a8eaba29",
+      "views_suffixes": ["_v"],
+      "skip": true      
+    },
+    {
+      "title": "Hazard",
+      "itemId": "0bf286957b6940eda23cee7f668e3ae9",
+      "views_suffixes": ["_v"],
+      "skip": false      
+    },
+    {
+      "title": "SurveyLine",
+      "itemId": "9d2f76eec1474e3e8da0aacf337d4070",
+      "views_suffixes": ["_v"],
+      "skip": false      
+    },
+    {
+      "title": "Units",
+      "itemId": "78531f5b1944402388b6e8c870e9081a",
+      "views_suffixes": ["_v"],
+      "skip": true      
+    },
+    {
+      "title": "Workplan",
+      "itemId": "01c834bc5d22490a93300cacf1a2137f",
+      "views_suffixes": ["_v"],
+      "skip": true      
+    },    
+    {
+      "title": "Parcels",
+      "itemId": "dd2d2a11af334c80ae1579d78d45ccdb",
+      "views_suffixes": ["_v"],
+      "skip": true      
+    }
+  ]  
+}

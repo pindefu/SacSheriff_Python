@@ -1,0 +1,46 @@
+{
+  "read_me": "This script creates web maps by combining the popups from the template web maps with the new symbols & field names of the new source layers (some views will be created)",  
+  "target_portal": "pro",
+  "template_portal": "pro",
+  "template_portal1": {
+    "path": "https://maps-dev.aphis.usda.gov/arcgis",
+    "client_id": "sZFZkmRtBiMeEtv8"
+  },
+
+  "layerItemIds": {
+    "TreesHighRisk": "31a777d98ac6488ba87eae97f796b1cf",
+    "TreesInfested": "000c5a1152fd4d6f89799594a5b8d79b",
+    "TreesSuspicious": "05c8662d15984405979b70e82130f413",
+    "TreesNegative": "348fbd0a31884bacac820692ef52d512",
+    "Callback": "8da62c6c669b427093387e3d4ba10afe",
+    "CallbackAttempt": "8da62c6c669b427093387e3d4ba10afe",
+    "Hazard": "37fd0923e8e64c61862786e60ac4cfeb",
+    "SurveyLine": "bd333c599c0a4e9181e839865b44b3a4",    
+    "Workplan": "aef6c4c16319416db063589f779259fe",
+    "Unit_Boundary": "deba44e681d84c40a89de229348fbd43",
+    "regulated_boundary": "5b02620818b748bd873b12892b6e1f2a",
+    "WorkplanProgress": "8f0753d5ec304cd9961c440eea7d1111",
+    "zone_boundary": "2463f1c103f44052b0ae91269aa00644",
+    "parcels_managed": "a1313f322d7347e7ba8da52af6091252"
+  },
+  "sourceItemsWithMultipleLayers":{
+    "Callback":0,
+    "CallbackAttempt":1
+  },
+  "layers_not_to_create_views":["parcels_managed","zone_boundary","Unit_Boundary"], 
+  "map_and_view_name_suffix": "3",
+  "webmaps_to_create":[
+    {
+      "title": "Climber",
+      "mapTemplateItemId": "26e8c2cd26b742cea0091dfcfef7c030",
+      "skip": false,
+      "Comment": "This will create views with names like '..._Climber_View' and a web map with name like 'Climber Web Map v5'. All the views and web map will be in a folder with the name like 'Climber_v5'"
+    },
+    {      
+      "title": "Ground",
+      "mapTemplateItemId": "e885b181f8f84fe0a7681d99ecc8ce6f",      
+      "skip": false
+    }
+  ]
+
+}
