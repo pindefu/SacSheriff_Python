@@ -10,7 +10,6 @@ import os
 import sys
 import os.path
 from os import path
-import copy
 
 
 def get_config(in_file):
