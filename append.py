@@ -93,7 +93,7 @@ def run_update(the_func):
             if not batch_size:
                 batch_size = 1000
             update_sets = [edit_list[x:x + batch_size] for x in range(0, len(edit_list), batch_size)]
-            logger.info('\nProcessing {} Batches\n'.format(len(update_sets)))
+            logger.info('\n\tProcessing {} Batches\n'.format(len(update_sets)))
 
             if operation == "update" and kwargs.get('track') is not None:
                 try:
@@ -142,13 +142,13 @@ def summarizeEditResult(operation, edit_result,  update_set, update_layer, track
         succeeded_records = list(filter(lambda d: d["success"] == True, edit_result[keyString]))
 
         #failed_records = list(filter(lambda d: d["success"] == False, edit_result[keyString]))
-        logger.info('\nEdit Results: {} of {} succeeded'.format(len(succeeded_records), totalRecords))
+        logger.info('\n\tEdit Results: {} of {} succeeded'.format(len(succeeded_records), totalRecords))
         #if len(succeeded_records)==0:
             #logger.info('\nFailed records: {}'.format(failed_records))
             # if operation == "add", then update
             #update_failed_records(failed_records, update_set, update_layer, track, batch, use_global_ids)
     else:
-        logger.info('\nEdit Results: {}'.format(edit_result))
+        logger.info('\n\tEdit Results: {}'.format(edit_result))
 
 
 def update_failed_records(failed_records, update_set, update_layer, track, batch, use_global_ids):
@@ -159,29 +159,68 @@ def update_failed_records(failed_records, update_set, update_layer, track, batch
 def update_records(failed_set):
     return failed_set
 
-def processTask(task, batchSize):
+
+def buildWhere_updated(updated_fields, lastTimeRan, additional_filter_query):
+    sWhere_updated = None
+    if lastTimeRan != None:
+        for fld in updated_fields:
+            if sWhere_updated is None:
+                sWhere_updated = fld + " > TIMESTAMP '" + lastTimeRan + "'"
+            else:
+                sWhere_updated = sWhere_updated + " or " + fld + " > TIMESTAMP '" + lastTimeRan + "'"
+
+    if sWhere_updated is not None and additional_filter_query is not None and len(additional_filter_query)>0:
+        sWhere_updated = "(" + sWhere_updated + ") and (" + additional_filter_query + ")"
+    elif sWhere_updated is None and additional_filter_query is not None and len(additional_filter_query)>0:
+        sWhere_updated = additional_filter_query
+    elif sWhere_updated is None and additional_filter_query is None and len(additional_filter_query)>0:
+        sWhere_updated = "1=1"
+
+    logger.info("\t sWhere: {}".format(sWhere_updated))
+    return sWhere_updated
+
+def processTask(task, batchSize, lastTimeRan):
 
     dataType = task["dataType"]
     target = task["target"]
-    bCheck4Existing = target["check4Existing"]
-
+    bCheck4Existing = True # Have to check exist or not. Otherwise, the add will fail
+    bOverwrite = target["overwrite"]
+    
     targetLyrOrTbl=None
     sdf_to_append = None
-    
+
+    additional_filter_query = None
+    if "additional_filter_query" in task:
+        additional_filter_query = task["additional_filter_query"]
+
+    sWhere_updated = buildWhere_updated(task["update_date_fields"], lastTimeRan, additional_filter_query)
+
     targetItem = gis.content.get(target["itemId"])
     if task["dataType"] == "LAYERS":
         targetLyrOrTbl = targetItem.layers[target["orderInItem"]]
-        sdf_to_append = pd.DataFrame.spatial.from_featureclass(task["source"]) # .query("globalid == '{C28F3958-ED03-4328-B238-1A6DD5C44DA1}'")    
+        sdf_to_append = pd.DataFrame.spatial.from_featureclass(task["source"], where_clause=sWhere_updated) 
     else:
         targetLyrOrTbl = targetItem.tables[target["orderInItem"]]
-        sdf_to_append = pd.DataFrame.spatial.from_table(task["source"], fields="*", skip_nulls=False) # .query("globalid == '{C28F3958-ED03-4328-B238-1A6DD5C44DA1}'")    
+        sdf_to_append = pd.DataFrame.spatial.from_table(task["source"], where=sWhere_updated, fields="*", skip_nulls=False) # .query("globalid == '{C28F3958-ED03-4328-B238-1A6DD5C44DA1}'")    
+
+    number_of_rows = len(sdf_to_append.index)
+    logger.info("\t Dataframe rows:{}".format(number_of_rows))
+    if number_of_rows == 0:
+        logger.info("\t No records to append.")
+        return
 
     if target["truncateFirst"] == True:
-        logger.info("Deleting all records")
-        targetLyrOrTbl.delete_features(where="objectid > 0")
+        logger.info("Truncate")
+        if additional_filter_query is not None and len(additional_filter_query) > 0:
+            targetLyrOrTbl.delete_features(where=additional_filter_query)
+        else:
+            targetLyrOrTbl.delete_features(where="objectid > 0")
+
+        # if truncated, no need to check for existing records
+        # bCheck4Existing = False
 
     # query to get the schema
-    schema_resp = targetLyrOrTbl.query(where="1=1", return_geometry=False, return_all_records = True, result_record_count=0)
+    schema_resp = targetLyrOrTbl.query(where="1=1", return_geometry=False, return_all_records = False, result_record_count=1)
     logger.info("schema_resp {}".format(schema_resp))
     fields_2_skip = ["creationdate", "creator", "editdate", "editor", "created_user", "created_date", "last_edited_user", "last_edited_date","SHAPE__Area", "SHAPE__Length"]
     fields_2_skip.append("objectid")
@@ -192,7 +231,7 @@ def processTask(task, batchSize):
 
     for index, row in sdf_to_append.iterrows():
         if index % batchSize == 0:
-            logger.info("\n \t index {}".format(index))
+            logger.info("\n \t index {} of {}".format(index, number_of_rows))
         #logger.info("\n \t row {}".format(row))
         
         globalids_to_add.append(row[globalIdFieldName])
@@ -228,38 +267,49 @@ def processTask(task, batchSize):
         records_to_add.append(new_feature)
 
         if index % batchSize == 0:
-            logger.info("\n      Batch {}".format(index/batchSize))
-            append_new_records(records_to_add, bCheck4Existing, globalids_to_add, targetLyrOrTbl, update=targetLyrOrTbl, track=None, operation="add", batch=batchSize, use_global_ids=True)        
+            logger.info("\n      Batch {}".format(round(index/batchSize)))
+            if index == 0:
+                logger.info("\n      Test with 1 record")
+
+            append_new_records(records_to_add, bCheck4Existing, bOverwrite, globalids_to_add, targetLyrOrTbl, update=targetLyrOrTbl, track=None, operation="add", batch=batchSize, use_global_ids=True)        
             records_to_add = []
             globalids_to_add = []            
 
-    logger.info("\n      Append remaining records")
-    append_new_records(records_to_add, bCheck4Existing, globalids_to_add, targetLyrOrTbl, update=targetLyrOrTbl, track=None, operation="add", batch=batchSize, use_global_ids=True)
+    if len(records_to_add) > 0:
+        logger.info("\n      Append remaining records")
+        append_new_records(records_to_add, bCheck4Existing, bOverwrite, globalids_to_add, targetLyrOrTbl, update=targetLyrOrTbl, track=None, operation="add", batch=batchSize, use_global_ids=True)
 
 
 @run_update
-def append_new_records(records_to_add, bCheck4Existing, globalids_to_add, targetLyrOrTbl):
+def append_new_records(records_to_add, bCheck4Existing, bOverwrite, globalids_to_add, targetLyrOrTbl):
     
     if not bCheck4Existing:
         return records_to_add
     else:
-        # query for records that are not in the target
+        # where clause for all the globalids
         s_globalids = ', '.join("'{0}'".format(g) for g in globalids_to_add)
+        s_Where_globalids = "globalid in (" + s_globalids +")"
+        if bOverwrite:
+            logger.info("\t Overwrite is set to true. Delete existing records with the same global ids")
+            # delete the records with the globalids
+            targetLyrOrTbl.delete_features(where=s_Where_globalids)
+            # add all the records
+            return records_to_add
+        else:            
+            resp = targetLyrOrTbl.query(s_Where_globalids, out_fields=["globalid"], return_geometry=False, return_all_records = True)
+            logger.info("\n      {} records already exist in target.".format(len(resp.features)))
 
-        resp = targetLyrOrTbl.query("globalid in (" + s_globalids +")", out_fields=["globalid"], return_geometry=False, return_all_records = True)
-        logger.info("\n      {} records already exist in target.".format(len(resp.features)))
+            globalids_exist_in_target = []
+            for feat in resp.features:
+                globalids_exist_in_target.append(feat.attributes["globalid"]) 
 
-        globalids_exist_in_target = []
-        for feat in resp.features:
-            globalids_exist_in_target.append(feat.attributes["globalid"]) 
+            records_to_add_not_in_target = list(filter(lambda d: d["attributes"]["globalid"] not in globalids_exist_in_target, records_to_add))
 
-        records_to_add_not_in_target = list(filter(lambda d: d["attributes"]["globalid"] not in globalids_exist_in_target, records_to_add))
-
-        if len(records_to_add_not_in_target)>0:
-            logger.info("\n  Records to add: {}".format(len(records_to_add_not_in_target)))
-            return records_to_add_not_in_target
-        else:
-            logger.info("\n   All records exist in the target. No need to add again")
+            if len(records_to_add_not_in_target)>0:
+                logger.info("\n  Records to add: {}".format(len(records_to_add_not_in_target)))
+                return records_to_add_not_in_target
+            else:
+                logger.info("\n   All records exist in the target. No need to add again")
 
 
 def updateTimeRan(file_last_time_run, startTimeInUTC):
@@ -292,12 +342,14 @@ if __name__ == "__main__":
     # token = the_portal['token']
     gis = GIS("pro")
     
-    #file_last_time_run = open(os.path.join(this_dir, "./config/config_append_last_time_ran.json"), "r+")
-    #last_time_run = json.load(file_last_time_run)        
+    file_last_time_run = open(os.path.join(this_dir, "./config/config_append_last_time_ran.json"), "r+")
+    last_time_run = json.load(file_last_time_run)        
 
     try:           
-        #lastTimeRan = last_time_run["lastTimeStart"]
-        #startTimeInUTC = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        lastTimeRan = last_time_run["lastTimeStart"]
+        startTimeInUTC = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        
+        ignore_lastTimeRan = parameters["ignore_lastTimeRan"]
         
         batchSize = parameters["batchSize"]
 
@@ -308,11 +360,15 @@ if __name__ == "__main__":
                 logger.info("\n\n\n *********** {} *************".format(task["description"]))
                 task_start_time = time.time()
 
-                processTask(task, batchSize)
+                if ignore_lastTimeRan:
+                    lastTimeRan = None
+
+                processTask(task, batchSize, lastTimeRan)
+                    
 
                 logger.info("\n\n\n ... task run time: {0} Minutes".format(round(((time.time() - task_start_time) / 60), 2)))
     
-        #updateTimeRan(file_last_time_run, startTimeInUTC)
+        updateTimeRan(file_last_time_run, startTimeInUTC)
 
     except Exception:
         logger.info(traceback.format_exc())

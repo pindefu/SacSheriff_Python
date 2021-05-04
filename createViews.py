@@ -86,7 +86,6 @@ def createViews(task, views_created):
     flc_source = FeatureLayerCollection.fromitem(sourceItem)
 
     for view_to_create in task["views_to_create"]:
-        description = view_to_create["description"]
         view_suffix = view_to_create["view_suffix"]
 
         view_title = sourceTitle + view_suffix
@@ -222,7 +221,7 @@ if __name__ == "__main__":
 
     # Collect Configured Parameters
     parameters = get_config(os.path.join(this_dir, "./config/config_createViews.json"))
-    the_portal = parameters["the_portal"]
+    # the_portal = parameters["the_portal"]
     # token = the_portal['token']
 
     # gis = GIS(the_portal["path"], client_id=the_portal["client_id"])

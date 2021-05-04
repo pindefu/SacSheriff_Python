@@ -1,30 +1,47 @@
 {
-  "batchSize": 2000,
+  "batchSize": 3000,
+  "ignore_lastTimeRan": true,  
   "tasks": [        
     {
       "description": "To append Negative Trees layer",
       "dataType": "LAYERS",
       "source": "C:/dev/APHIS/MVP2/MVP2/NegativeTrees_Transformed.gdb/NegativeTrees",
-      "source_small": "C:/dev/APHIS/MVP2/MVP2/NegativeTrees.gdb/NegativeTrees",      
+      "update_date_fields": [
+        "inspection_date",
+        "data_qa_timestamp"
+      ],
+      "additional_filter_query_comment": "for example, zone in a list of zone ids",
+      "additional_filter_query": "",      
       "target": {
-        "itemId": "aad429b976c548b189662356694c27ad",
+        "itemId": "4ad04f1a34824b1aaa688d2eeb82762e",
         "orderInItem": 0,
-        "truncateFirst": false, "check4Existing": false
+        "truncateFirst_comment": "Be careful !!! If truncateFirst is true, it will truncate in the target all records or all records meatching the additional_filter_query if defined above", 
+        "truncateFirst": true,         
+        "overwrite_comment": "If overwrite is false, only new records will be added. Existing records will be skipped",
+        "overwrite": true
       },
-      "skip": true
+      "skip": false
     },
     {
       "description": "To append Negative Trees table",
       "dataType": "TABLES",
       "source": "C:/dev/APHIS/MVP2/MVP2/NegativeTrees_Transformed.gdb/NegativeTrees_Surveys",
-      "source_small": "C:/dev/APHIS/MVP2/MVP2/NegativeTrees.gdb/NegativeTrees_Surveys",      
+      "update_date_fields": [
+        "inspection_date",
+        "data_qa_timestamp"
+      ],
+      "additional_filter_query_comment": "for example, zone in a list of zone ids",
+      "additional_filter_query": "",      
       "target": {
-        "itemId": "aad429b976c548b189662356694c27ad",
+        "itemId": "4ad04f1a34824b1aaa688d2eeb82762e",
         "orderInItem": 0,
-        "truncateFirst": false, "check4Existing": true
+        "truncateFirst_comment": "Be careful !!! If truncateFirst is true, it will truncate in the target all records or all records meatching the additional_filter_query if defined above", 
+        "truncateFirst": true,         
+        "overwrite_comment": "If overwrite is false, only new records will be added. Existing records will be skipped",
+        "overwrite": true
       },
-      "skip": true
-    },        
+      "skip": false
+    },    
     {
       "description": "To append Trees layer",
       "dataType": "LAYERS",
@@ -32,9 +49,10 @@
       "target": {
         "itemId": "82dd786d6f4c47cd906ef509cb6ff17c",
         "orderInItem": 0,
-        "truncateFirst": false, "check4Existing": false
+        "truncateFirst": false, 
+        "check4Existing": false
       },
-      "skip": false
+      "skip": true
     },
     {
       "description": "To append Trees table",
@@ -43,9 +61,10 @@
       "target": {
         "itemId": "82dd786d6f4c47cd906ef509cb6ff17c",
         "orderInItem": 0,
-        "truncateFirst": false, "check4Existing": false
+        "truncateFirst": false, 
+        "check4Existing": false
       },
-      "skip": false
+      "skip": true
     },    
     {
       "description": "To append Callback layer",
@@ -54,7 +73,8 @@
       "target": {
         "itemId": "80ee584413b342e3ad83b18547ab5ed1",
         "orderInItem": 0,
-        "truncateFirst": false, "check4Existing": false
+        "truncateFirst": false, 
+        "check4Existing": false
       },
       "skip": true
     },
@@ -65,7 +85,8 @@
       "target": {
         "itemId": "80ee584413b342e3ad83b18547ab5ed1",
         "orderInItem": 0,
-        "truncateFirst": false, "check4Existing": false
+        "truncateFirst": false, 
+        "check4Existing": false
       },
       "skip": true
     },    
@@ -76,7 +97,8 @@
       "target": {
         "itemId": "0bf286957b6940eda23cee7f668e3ae9",
         "orderInItem": 0,
-        "truncateFirst": false, "check4Existing": false
+        "truncateFirst": false, 
+        "check4Existing": false
       },
       "skip": true
     },
@@ -87,7 +109,8 @@
       "target": {
         "itemId": "9d2f76eec1474e3e8da0aacf337d4070",
         "orderInItem": 0,
-        "truncateFirst": false, "check4Existing": false
+        "truncateFirst": false, 
+        "check4Existing": false
       },
       "skip": true
     },
@@ -98,13 +121,11 @@
       "target": {
         "itemId": "9d2f76eec1474e3e8da0aacf337d4070",
         "orderInItem": 0,
-        "truncateFirst": false, "check4Existing": false
+        "truncateFirst": false, 
+        "check4Existing": false
       },
       "skip": true
-    }            
-
-
-    
+    }
   ]
 
 }

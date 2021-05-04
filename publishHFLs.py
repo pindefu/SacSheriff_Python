@@ -52,6 +52,7 @@ def get_logger(t_dir, t_filename, s_time):
 
     return log, l_dir
 
+
 def publishSD(in_sd, pLyrConfig, service_name, editableLayerDefinition):
 
     logger.info("Uploading Service Definition...")
@@ -66,7 +67,7 @@ def publishSD(in_sd, pLyrConfig, service_name, editableLayerDefinition):
         flc.manager.update_definition(editableLayerDefinition)
         logger.info("Successfully updated services definition to make the layer editable.")
 
-    #item_published.protect(enable=True)
+    # item_published.protect(enable=True)
     #logger.info("Enaled delete protection")
 
     return item_published
@@ -86,10 +87,7 @@ if __name__ == "__main__":
 
     # Collect Configured Parameters
     parameters = get_config(os.path.join(this_dir, "./config/config_publishHFLs.json"))
-    the_portal = parameters["the_portal"]
-    # token = the_portal['token']
 
-    #gis = GIS(the_portal["path"], client_id=the_portal["client_id"])
     gis = GIS("pro")
 
     try:
@@ -98,7 +96,7 @@ if __name__ == "__main__":
         path_to_store_service_definition_files = parameters[
             "path_to_store_service_definition_files"
         ]
-        
+
         service_name_prefix = parameters["service_name_prefix"]
         service_name_suffix = parameters["service_name_suffix"]
         target_folder_in_portal = parameters["target_folder_in_portal"]
@@ -109,7 +107,7 @@ if __name__ == "__main__":
         seconds_to_sleep_between_layers = parameters["seconds_to_sleep_between_layers"]
         result_layers = {}
         failed_layers = []
-        
+
         all_layers_in_map = []
         for l in m.listLayers():
             all_layers_in_map.append(l.name)
@@ -122,8 +120,8 @@ if __name__ == "__main__":
             if pLyrConfig["skip"] == False:
                 if idx > 0:
                     time.sleep(seconds_to_sleep_between_layers)
-                    
-                try: 
+
+                try:
                     lyr_start_time = time.time()
                     names_in_pro_map = pLyrConfig["names_in_pro_map"]
                     logger.info("\n\n----------- layer to publish: {} -----------------".format(names_in_pro_map))
@@ -137,12 +135,12 @@ if __name__ == "__main__":
                         else:
                             raise Exception("Unable to find the layer or table {}".format(name))
 
-                    if len(lyrs)==0:
+                    if len(lyrs) == 0:
                         logger.error(" __ERROR____{}\n\n".format("Not such layer(s) found in the ArcGIS Pro project"))
-                        continue 
+                        continue
 
-                    if len(lyrs)==1:
-                        lyrs=lyrs[0]
+                    if len(lyrs) == 1:
+                        lyrs = lyrs[0]
 
                     logger.info("lyrs {}".format(lyrs))
 
@@ -150,15 +148,15 @@ if __name__ == "__main__":
                     overwrite_existing_sd = pLyrConfig["overwrite_existing_sd"]
                     overwrite_existing_service = pLyrConfig["overwrite_existing_service"]
 
-                    service_available = gis.content.is_service_name_available(service_name=service_name, service_type = 'featureService')
+                    service_available = gis.content.is_service_name_available(service_name=service_name, service_type='featureService')
                     if not service_available:
                         logger.warning(" Service name exists: {}".format(service_name))
                         if not overwrite_existing_service:
-                            existing_item = gis.content.search(query="title:"+service_name, item_type="Feature Layer")[0]                        
+                            existing_item = gis.content.search(query="title:"+service_name, item_type="Feature Layer")[0]
                             result_layers[pLyrConfig["service_name"]] = existing_item.id
                             continue
-                    
-                    out_sd = path_to_store_service_definition_files + "\\" + service_name + ".sd"                    
+
+                    out_sd = path_to_store_service_definition_files + "\\" + service_name + ".sd"
                     if path.exists(out_sd) or path.exists(out_sd + "draft"):
                         if overwrite_existing_sd:
                             if path.exists(out_sd):
@@ -167,7 +165,7 @@ if __name__ == "__main__":
                             if path.exists(out_sd + "draft"):
                                 os.remove(out_sd + "draft")
                                 logger.info("Existing SD draft file removed")
-                        
+
                     if not path.exists(out_sd):
                         if not path.exists(out_sd + "draft"):
                             sddraft = arcpy.mp.CreateWebLayerSDDraft(
@@ -177,7 +175,7 @@ if __name__ == "__main__":
                                 pLyrConfig["server_type"],
                                 pLyrConfig["service_type"],
                                 folder_name=target_folder_in_portal,
-                                overwrite_existing_service = overwrite_existing_service,
+                                overwrite_existing_service=overwrite_existing_service,
                                 copy_data_to_server=True,
                                 enable_editing=pLyrConfig["enable_editing"],
                                 allow_exporting=pLyrConfig["allow_exporting"],
@@ -187,28 +185,26 @@ if __name__ == "__main__":
                                 description=pLyrConfig["description"])
                             logger.info("SD Draft file {} generated ".format(out_sd + "draft"))
 
-
                         arcpy.StageService_server(out_sd + "draft", out_sd)
                         logger.info("SD file {} generated ".format(out_sd))
 
-                    item_published = publishSD(out_sd, pLyrConfig, service_name, editableLayerDefinition)                    
+                    item_published = publishSD(out_sd, pLyrConfig, service_name, editableLayerDefinition)
                     # Generate the sourceItemIds parameter for use with createWebMaps.py:
                     result_layers[pLyrConfig["service_name"]] = item_published.id
                     # In case there are multiple layers in the service, add the look up of these layers and the item id to the result
                     if len(names_in_pro_map) > 1:
                         for name in names_in_pro_map:
                             if name != pLyrConfig["service_name"]:
-                                result_layers[name] = item_published.id                    
+                                result_layers[name] = item_published.id
 
                 except Exception:
                     for name in names_in_pro_map:
                         failed_layers.append(name)
-                    logger.info("current time: {}".format(time.strftime("%H:%M:%S", time.localtime())))               
+                    logger.info("current time: {}".format(time.strftime("%H:%M:%S", time.localtime())))
                     logger.info(traceback.format_exc())
                 finally:
                     lyr_end_time = time.time()
-                    logger.info(" ... Layer run time: {0} Minutes".format(round(((time.time() - lyr_start_time) / 60), 2)))                    
-                    
+                    logger.info(" ... Layer run time: {0} Minutes".format(round(((time.time() - lyr_start_time) / 60), 2)))
 
         logger.info("Result layers: {}".format(result_layers))
         if len(failed_layers):
@@ -224,4 +220,3 @@ if __name__ == "__main__":
                 round(((time.time() - start_time) / 60), 2)
             )
         )
-

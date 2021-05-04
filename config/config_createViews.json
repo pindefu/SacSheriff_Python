@@ -1,8 +1,4 @@
-{
-  "the_portal": {
-    "path": "https://maps-dev.aphis.usda.gov/arcgis",
-    "client_id": "sZFZkmRtBiMeEtv8"
-  },
+{  
   "tasks": [
     {
       "title": "Negative Trees",
@@ -12,6 +8,23 @@
           "description": "Ground survey",
           "view_suffix": "_Ground_View_dev",
           "target_folder": "MVP3_Views_test",
+          "editableLayerDefinition": {
+            "capabilities": "Query,Editing,Create,Update,Delete,Sync,Extract",
+            "editorTrackingInfo": {
+              "enableEditorTracking": true,
+              "enableOwnershipAccessControl": false,
+              "allowOthersToUpdate": true,
+              "allowOthersToDelete": true,
+              "allowOthersToQuery": true
+            }
+          },
+          "share_settings": {
+            "everyone": false,
+            "org": false,
+            "groups": [
+              "18e4475525af46a3adcd8bb003d338a0"
+            ]
+          },
           "sub_definitions": [
             {
               "layerIdInItem": 0,
@@ -29,24 +42,7 @@
                 "inspection_org": "Program Ground"
               }
             }
-          ],
-          "editableLayerDefinition": {
-            "capabilities": "Query,Editing,Create,Update,Delete,Sync,Extract",
-            "editorTrackingInfo": {
-              "enableEditorTracking": true,
-              "enableOwnershipAccessControl": false,
-              "allowOthersToUpdate": true,
-              "allowOthersToDelete": true,
-              "allowOthersToQuery": true
-            }
-          },
-          "share_settings": {
-            "everyone": false,
-            "org": false,
-            "groups": [
-              "18e4475525af46a3adcd8bb003d338a0"
-            ]
-          }
+          ]
         },
         {
           "description": "Climber survey",
@@ -89,34 +85,16 @@
           }
         }
       ],
-      "skip": true
+      "skip": false
     },
     {
       "title": "Callback",
-      "itemId": "ab7feb2777184874a4469f94a8eaba29",
+      "itemId": "80ee584413b342e3ad83b18547ab5ed1",
       "views_to_create": [
         {
           "description": "Ground survey",
           "view_suffix": "_Ground_View_dev",
           "target_folder": "MVP3_Views_test",
-          "sub_definitions": [
-            {
-              "layerIdInItem": 0,
-              "viewDefinitionQuery": "isvalid <> 'Inactive' and isvalid <> 'Marked for Deletion'",
-              "default_values": {
-                "inspection_method": "Ground Survey",
-                "inspection_org": "Program Ground"
-              }
-            },
-            {
-              "tableIdInItem": 0,
-              "viewDefinitionQuery": "isvalid <> 'Marked for Deletion'",
-              "default_values": {
-                "inspection_method": "Ground Survey",
-                "inspection_org": "Program Ground"
-              }
-            }
-          ],
           "editableLayerDefinition": {
             "capabilities": "Query,Editing,Create,Update,Delete,Sync,Extract",
             "editorTrackingInfo": {
@@ -133,7 +111,16 @@
             "groups": [
               "18e4475525af46a3adcd8bb003d338a0"
             ]
-          }
+          },
+          "sub_definitions": [
+            {
+              "layerIdInItem": 0,
+              "viewDefinitionQuery": null,
+              "default_values": {
+                "inspection_type": "Ground Survey"
+              }
+            }
+          ]
         },
         {
           "description": "Climber survey",
@@ -142,18 +129,9 @@
           "sub_definitions": [
             {
               "layerIdInItem": 0,
-              "viewDefinitionQuery": "isvalid <> 'Inactive' and isvalid <> 'Marked for Deletion'",
+              "viewDefinitionQuery": null,
               "default_values": {
-                "inspection_method": "Aerial Survey",
-                "inspection_org": "Program Climb"
-              }
-            },
-            {
-              "tableIdInItem": 0,
-              "viewDefinitionQuery": "isvalid <> 'Inactive'",
-              "default_values": {
-                "inspection_method": "Aerial Survey",
-                "inspection_org": "Program Climb"
+                "inspection_type": "Aerial Survey"
               }
             }
           ],
@@ -181,10 +159,31 @@
     {
       "title": "Hazard",
       "itemId": "0bf286957b6940eda23cee7f668e3ae9",
-      "views_suffixes": [
-        "_v"
+      "views_to_create": [
+        {
+          "description": "Hazard",
+          "view_suffix": "_View_dev",
+          "target_folder": "MVP3_Views_test",
+          "editableLayerDefinition": {
+            "capabilities": "Query,Editing,Create,Update,Delete,Sync,Extract",
+            "editorTrackingInfo": {
+              "enableEditorTracking": true,
+              "enableOwnershipAccessControl": false,
+              "allowOthersToUpdate": true,
+              "allowOthersToDelete": true,
+              "allowOthersToQuery": true
+            }
+          },
+          "share_settings": {
+            "everyone": false,
+            "org": false,
+            "groups": [
+              "18e4475525af46a3adcd8bb003d338a0"
+            ]
+          }
+        }
       ],
-      "skip": true
+      "skip": false
     },
     {
       "title": "SurveyLine",
