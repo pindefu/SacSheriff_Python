@@ -1,11 +1,11 @@
 {
   "batchSize": 3000,
-  "ignore_lastTimeRan": true,  
+  "ignore_lastTimeRan": false,  
   "tasks": [        
     {
       "description": "To append Negative Trees layer",
       "dataType": "LAYERS",
-      "source": "C:/dev/APHIS/MVP2/MVP2/NegativeTrees_Transformed.gdb/NegativeTrees",
+      "source": "C:/dev/APHIS/MVP2/MVP2/NegativeTrees_Transformed.gdb/NegativeTrees_small",
       "update_date_fields": [
         "inspection_date",
         "data_qa_timestamp"
@@ -16,9 +16,9 @@
         "itemId": "4ad04f1a34824b1aaa688d2eeb82762e",
         "orderInItem": 0,
         "truncateFirst_comment": "Be careful !!! If truncateFirst is true, it will truncate in the target all records or all records meatching the additional_filter_query if defined above", 
-        "truncateFirst": true,         
+        "truncateFirst": false,         
         "overwrite_comment": "If overwrite is false, only new records will be added. Existing records will be skipped",
-        "overwrite": true
+        "overwrite": false
       },
       "skip": false
     },
@@ -36,7 +36,7 @@
         "itemId": "4ad04f1a34824b1aaa688d2eeb82762e",
         "orderInItem": 0,
         "truncateFirst_comment": "Be careful !!! If truncateFirst is true, it will truncate in the target all records or all records meatching the additional_filter_query if defined above", 
-        "truncateFirst": true,         
+        "truncateFirst": false,         
         "overwrite_comment": "If overwrite is false, only new records will be added. Existing records will be skipped",
         "overwrite": true
       },

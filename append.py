@@ -1,8 +1,6 @@
 from arcgis.gis import GIS
 from arcgis import features
 from arcgis.features import FeatureLayerCollection
-from arcgis.geometry import Geometry
-from arcgis.geometry.filters import intersects
 import pandas as pd
 
 from arcgis.features import GeoAccessor, GeoSeriesAccessor
@@ -15,7 +13,7 @@ import time
 import json
 import os
 import sys
-import copy
+import gc
 
 
 def get_config(in_file):
@@ -201,7 +199,7 @@ def processTask(task, batchSize, lastTimeRan):
         sdf_to_append = pd.DataFrame.spatial.from_featureclass(task["source"], where_clause=sWhere_updated) 
     else:
         targetLyrOrTbl = targetItem.tables[target["orderInItem"]]
-        sdf_to_append = pd.DataFrame.spatial.from_table(task["source"], where=sWhere_updated, fields="*", skip_nulls=False) # .query("globalid == '{C28F3958-ED03-4328-B238-1A6DD5C44DA1}'")    
+        sdf_to_append = pd.DataFrame.spatial.from_table(task["source"], where=sWhere_updated, fields="*", skip_nulls=False)
 
     number_of_rows = len(sdf_to_append.index)
     logger.info("\t Dataframe rows:{}".format(number_of_rows))
@@ -210,14 +208,14 @@ def processTask(task, batchSize, lastTimeRan):
         return
 
     if target["truncateFirst"] == True:
-        logger.info("Truncate")
+        logger.info("\tTruncate")
         if additional_filter_query is not None and len(additional_filter_query) > 0:
             targetLyrOrTbl.delete_features(where=additional_filter_query)
         else:
+            logger.info("\tTruncating all records!")
             targetLyrOrTbl.delete_features(where="objectid > 0")
-
-        # if truncated, no need to check for existing records
-        # bCheck4Existing = False
+            # if all records are truncated, no need to check for existing records
+            bCheck4Existing = False        
 
     # query to get the schema
     schema_resp = targetLyrOrTbl.query(where="1=1", return_geometry=False, return_all_records = False, result_record_count=1)
@@ -279,6 +277,8 @@ def processTask(task, batchSize, lastTimeRan):
         logger.info("\n      Append remaining records")
         append_new_records(records_to_add, bCheck4Existing, bOverwrite, globalids_to_add, targetLyrOrTbl, update=targetLyrOrTbl, track=None, operation="add", batch=batchSize, use_global_ids=True)
 
+    del sdf_to_append
+    gc.collect()
 
 @run_update
 def append_new_records(records_to_add, bCheck4Existing, bOverwrite, globalids_to_add, targetLyrOrTbl):
@@ -297,7 +297,7 @@ def append_new_records(records_to_add, bCheck4Existing, bOverwrite, globalids_to
             return records_to_add
         else:            
             resp = targetLyrOrTbl.query(s_Where_globalids, out_fields=["globalid"], return_geometry=False, return_all_records = True)
-            logger.info("\n      {} records already exist in target.".format(len(resp.features)))
+            logger.info("\t      {} records already exist in target.".format(len(resp.features)))
 
             globalids_exist_in_target = []
             for feat in resp.features:
@@ -306,10 +306,10 @@ def append_new_records(records_to_add, bCheck4Existing, bOverwrite, globalids_to
             records_to_add_not_in_target = list(filter(lambda d: d["attributes"]["globalid"] not in globalids_exist_in_target, records_to_add))
 
             if len(records_to_add_not_in_target)>0:
-                logger.info("\n  Records to add: {}".format(len(records_to_add_not_in_target)))
+                logger.info("\t  Records to add: {}".format(len(records_to_add_not_in_target)))
                 return records_to_add_not_in_target
             else:
-                logger.info("\n   All records exist in the target. No need to add again")
+                logger.info("\t   All records exist in the target. No need to add again")
 
 
 def updateTimeRan(file_last_time_run, startTimeInUTC):
