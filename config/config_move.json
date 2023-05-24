@@ -1,0 +1,105 @@
+{
+	"email_config": {
+		"smtp_server": "smtp.esri.com",
+		"smtp_port": 25,
+		"from_email": "pfu@esri.com",
+		"to_email": "pfu@esri.com",
+    "subject": "Notification from the Python script moving survey data",
+    "content": "{dynamic_content}<br><br><b>This is an automatically generated email.</b>"
+  },
+  "source_item_id": "2f21c4f8b8714f12ba0db9f2b645c0d2",
+  "target_item_id": "ac9790fbdb4f473288d85aabdd620b98",
+  "tasks": [
+    {
+      "name": "Form_6",
+      "dataType": "LAYER",
+      "id_in_item": 0
+    },
+    {
+      "name": "person_details",
+      "dataType": "TABLE",
+      "id_in_item": 0
+    },
+    {
+      "name": "veh_details",
+      "dataType": "TABLE",
+      "id_in_item": 1
+    },
+    {
+      "name": "weapon_details",
+      "dataType": "TABLE",
+      "id_in_item": 2
+    }
+  ],
+
+
+
+
+
+  "the_portal_source": {
+    "path": "https://sandbox.maps.arcgis.com",
+		"user": "pinde_env",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+		"pass": "xxx*"
+  },
+
+  
+  "the_portal_target": {
+    "path": "https://esprd.maps.arcgis.com",
+		"user": "peter.test",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+		"pass": "xxx!"
+  }
+
+
+}
